@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Tic Tac Toe</title>
+    <style>
+        table {
+            margin: 0 auto;
+            border-spacing: 1;
+        }
+
+        td {
+            height: 40px;
+            width: 40px;
+            border: 1px solid black;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 24px;
+        }
+
+        td.x {
+            color: red;
+        }
+
+        td.o {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <tr>
+            <td class="empty"></td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+        </tr>
+        <tr>
+            <td class="empty"></td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+        </tr>
+        <tr>
+            <td class="empty"></td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+        </tr>
+    </table>
+    <button id="reset">Reset</button>
+    <script>
+        let playerSymbol = "X";
+let gameEnded = false;
+
+const winPos = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9],
+  [1, 4, 7],
+  [2, 5, 8],
+  [3, 6, 9],
+  [1, 5, 9],
+  [3, 5, 7],
+];
+
+const updateBoard = function (square) {
+  square.innerHTML = playerSymbol;
+  square.classList.remove("empty");
+  square.classList.add(playerSymbol);
+};
+
+const resetBoard = function () {
+  document.querySelectorAll("td").forEach((square) => {
+    square.innerHTML = "";
+    square.classList.remove(playerSymbol);
+    square.classList.add("empty");
+  });
+  playerSymbol = playerSymbol === "X" ? "O" : "X";
+  gameEnded = false;
+};
+
+const resetBoardAndNewGame = function () {
+  gameEnded = false;
+  playerSymbol = "X";
+  document.querySelector("#message").innerHTML = "X's turn";
+  resetBoard();
+};
+
+const changePlayer = function () {
+  playerSymbol = playerSymbol === "X" ? "O" : "X";
+  document.querySelector("#message").innerHTML = playerSymbol + "'s turn";
+};
+
+const checkWin = function (playerSymbol, square1, square2, square3) {
+  if (square1.innerHTML === playerSymbol && square2.innerHTML === playerSymbol && square3.innerHTML === playerSymbol) {
+    return true;
+  }
+  return false;
+};
+
+const checkIfWin = function () {
+  for (const combo of winPos) {
+    const square1 = document.querySelector("#cell_" + combo[0]);
+    const square2 = document.querySelector("#cell_" + combo[1]);
+    const square3 = document.querySelector("#cell_" + combo[2]);
+
+    if (checkWin(playerSymbol, square1, square2, square3)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const cell = document.querySelectorAll("td.empty");
+for (const sq of cell) {
+  sq.addEventListener("click", function (event) {
+    if (gameEnded) {
+      return;
+    }
+    updateBoard(event.target);
+    if (checkIfWin()) {
+      gameEnded = true;
+      document.querySelector("#message").innerHTML = `${playerSymbol} wins!`;
+    } else if (checkIfWin(playerSymbol, ...document.querySelectorAll(`td.${playerSymbol}`))) {
+      gameEnded = true;
+      document.querySelector("#message").innerHTML = `${playerSymbol} wins!`;
+    } else if (document.querySelectorAll("td.empty").length === 0) {
+      gameEnded = true;
+      document.querySelector("#message").innerHTML = "It's a draw!";
+    } else {
+      changePlayer();
+    }
+  });
+}
+
+document.querySelector("#reset").addEventListener("click", resetBoardAndNewGame);
+
+resetBoardAndNewGame();
+    </script>
+</body>
+</html>
